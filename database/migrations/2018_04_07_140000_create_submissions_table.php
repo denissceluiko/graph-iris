@@ -38,10 +38,12 @@ class CreateSubmissionsTable extends Migration
             $table->integer('course_results')->unsigned();
             $table->integer('lecturer_again')->unsigned();
             $table->integer('test_explanation')->unsigned();
-            $table->text('comments')->unsigned();
+            $table->text('comments');
             $table->integer('course_time')->unsigned();
 
             $table->timestamps();
+
+            $table->unique(['student_id', 'program_id', 'semester']);
         });
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Excel;
 
 class ImportController extends Controller
 {
@@ -91,9 +92,14 @@ class ImportController extends Controller
 
     private function import($path)
     {
-        dd($path);
         if (!Storage::exists($path)) return false;
 
-//        Storage::
+        Excel::load($path, function($reader) {
+            $reader->each(function($sheet) {
+                $sheet->each(function($row) {
+
+                });
+            });
+        });
     }
 }

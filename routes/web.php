@@ -14,6 +14,13 @@
 Route::get('/', 'HomeController@index');
 Route::resource('import', 'ImportController');
 
+Route::get('program', 'ProgramController@index')->name('program.index');
+Route::group(['prefix' => 'program/{program}'], function() {
+    Route::get('/', 'ProgramController@show')->name('program.show');
+    Route::get('{course}', 'CourseController@show')->name('course.show');
+});
+
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'ProgramController@index')->name('home');
+//Route::get('/home', 'HomeController@index')->name('home');

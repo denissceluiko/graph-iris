@@ -21,29 +21,29 @@ class CreateSubmissionsTable extends Migration
             $table->integer('times_taken')->unsigned();
             $table->dateTime('started_at');
             $table->integer('duration')->unsigned();
-            $table->string('semester');
+            $table->integer('semester_id')->unsigned();
             $table->integer('course_id')->unsigned();
             $table->integer('lector_id')->unsigned();
             $table->string('position');
             // Questions
-            $table->integer('course_parts')->unsigned();
-            $table->integer('course_description')->unsigned();
-            $table->integer('course_duplication')->unsigned();
-            $table->integer('lecturer_understandable')->unsigned();
-            $table->integer('lecturer_methods')->unsigned();
-            $table->integer('literature_usefullness')->unsigned();
-            $table->integer('estudies_materials')->unsigned();
-            $table->integer('course_tests')->unsigned();
-            $table->integer('lecturer_consultations')->unsigned();
-            $table->integer('course_results')->unsigned();
-            $table->integer('lecturer_again')->unsigned();
-            $table->integer('test_explanation')->unsigned();
-            $table->text('comments');
-            $table->integer('course_time')->unsigned();
+            $table->integer('course_parts')->unsigned()->nullable();
+            $table->integer('course_description')->unsigned()->nullable();
+            $table->integer('course_duplication')->unsigned()->nullable();
+            $table->integer('lecturer_understandable')->unsigned()->nullable();
+            $table->integer('lecturer_methods')->unsigned()->nullable();
+            $table->integer('literature_usefullness')->unsigned()->nullable();
+            $table->integer('estudies_materials')->unsigned()->nullable();
+            $table->integer('course_tests')->unsigned()->nullable();
+            $table->integer('lecturer_consultations')->unsigned()->nullable();
+            $table->integer('course_results')->unsigned()->nullable();
+            $table->integer('lecturer_again')->unsigned()->nullable();
+            $table->integer('test_explanation')->unsigned()->nullable();
+            $table->text('comments')->nullable();
+            $table->integer('course_time')->unsigned()->nullable();
 
             $table->timestamps();
 
-            $table->unique(['student_id', 'program_id', 'semester']);
+            $table->unique(['student_id', 'course_id', 'lector_id', 'semester_id']);
         });
     }
 

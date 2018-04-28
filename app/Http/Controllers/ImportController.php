@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ImportSurveyData;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Excel;
 
 class ImportController extends Controller
 {
@@ -15,6 +14,7 @@ class ImportController extends Controller
      */
     public function index()
     {
+//        return 'Job queued';
         return view('import.index');
     }
 
@@ -37,12 +37,14 @@ class ImportController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'import_data' => 'file|mimetypes:text/csv'
+            'survey-data' => 'file|mimes:csv,txt'
         ]);
 
-        $path = $request->file('import_data')->store('course_questionnaries');
+        $path = $request->file('survey-data')->store('surveys/new');
 
-        $this->import($path);
+        ImportSurveyData::dispatch(storage_path('app/'.$path));
+        $request->session()->flash('import-status', 'File was successfully uploaded and will be processed soon.');
+        return back();
     }
 
     /**
@@ -88,18 +90,5 @@ class ImportController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    private function import($path)
-    {
-        if (!Storage::exists($path)) return false;
-
-        Excel::load($path, function($reader) {
-            $reader->each(function($sheet) {
-                $sheet->each(function($row) {
-
-                });
-            });
-        });
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Program;
+use App\Semester;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -61,10 +62,19 @@ class ProgramController extends Controller
         return view('program.dashboard', compact('trace'));
     }
 
-    public function show(Program $program)
+    public function show(Program $program, Semester $semester = null)
     {
-        $courses = $program->courses()->get();
+        if (!$semester)
+        {
+            $semester = Semester::latest()->first();
+        }
 
-        return view('program.show', compact('program', 'courses'));
+        $semesters = Semester::orderByDesc('code')->get();
+
+        $courses = $program->courses($semester)->withCount(['submissions' => function(\Illuminate\Database\Eloquent\Builder $query) use ($semester) {
+            return $query->where('semester_id', $semester->id);
+        }])->orderByDesc('submissions_count')->get();
+
+        return view('program.show', compact('program', 'semester', 'semesters', 'courses'));
     }
 }

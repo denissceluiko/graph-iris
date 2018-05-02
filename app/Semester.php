@@ -9,13 +9,13 @@ class Semester extends Model
 {
     protected $guarded = [];
 
-    public function courses()
-    {
-        $this->hasMany(Course::class);
-    }
-
     public function scopeLatest(Builder $query)
     {
         return $query->orderByDesc('code')->take(1);
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'code';
     }
 }

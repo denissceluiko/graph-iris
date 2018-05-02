@@ -4,67 +4,71 @@
     <div class="container">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('program.show', ['program' => $program]) }}">{{ $program->name }}</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('course.show', ['program' => $program, 'course' => $course->id]) }}">{{ $course->code }} {{ $course->name }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('program.index') }}">Programmas</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('program.show', compact('program', 'semester')) }}">{{ $program->name }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('course.show', compact('program', 'semester', 'course')) }}">{{ $course->code }} {{ $course->name }}</a></li>
             </ol>
         </nav>
         <div class="row">
             <div class="col-12 col-md-6">
-                <table class="table">
-                    <tr>
-                        <td><b>Nosaukums</b></td>
-                        <td>{{ $course->name }}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Kods</b></td>
-                        <td>{{ $course->code }}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Kredītpunkti</b></td>
-                        <td>{{ $course->credits }}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Semestris</b></td>
-                        <td>{{ $coursemeta['semester']->name }}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Pasniedzēji</b></td>
-                        <td>
-                            @foreach($submissions->unique('lector_id') as $submission)
-                                {{ $submission->position }} {{ $submission->lector->name }}<br>
-                            @endforeach
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><b>Aizpildījumi</b></td>
-                        <td>{{ $submissions->count() }}</td>
-                    </tr>
-                </table>
+                <dl class="row">
+                    <dt class="col-sm-3">Nosaukums</dt>
+                    <dd class="col-sm-9">{{ $course->name }}</dd>
+                    <dt class="col-sm-3">Kods</dt>
+                    <dd class="col-sm-9">{{ $course->code }}</dd>
+                    <dt class="col-sm-3">Kredītpunkti</dt>
+                    <dd class="col-sm-9">{{ $course->credits }}</dd>
+                    <dt class="col-sm-3">Semestris</dt>
+                    <dd class="col-sm-9">{{ $coursemeta['semester']->name }}</dd>
+                    <dt class="col-sm-3">Aizpildījumi</dt>
+                    <dd class="col-sm-9">{{ $submissions->count() }}</dd>
+                    <dt class="col-sm-3">Komentāri</dt>
+                    <dd class="col-sm-9">{{ $submissions->filter->hasComments()->count() }}</dd>
+                </dl>
             </div>
             <div class="col-12 col-md-6">
-                <ol class="nav flex-column nav-pills nav-fill">
-                    @foreach($coursemeta['parts'] as $key => $value)
-                        <li class="nav-item"><a class="nav-link{{ $key == $coursemeta['part'] ? ' active' : '' }}" href="{{ route('course.show', ['program' => $program, 'course' => $course, 'part' => $key]) }}">{{ $value }}</a></li>
-                    @endforeach
-                </ol>
-                <div class="form-group">
-                    <label>Pasniedzējs</label>
-                    <select class="form-control">
-                        <option>Visi</option>
-                        <option value="1">Viens</option>
-                    </select>
-                </div>
+                <dl>
+                    <dt>Kursa daļa</dt>
+                    <dd>
+                        <ol class="nav nav-pills">
+                            @foreach($coursemeta['parts'] as $part => $caption)
+                                <li class="nav-item">
+                                    <a class="nav-link{{ $part == $coursemeta['part'] ? ' active' : '' }}"
+                                       href="{{ route('course.show', compact(['program', 'semester', 'course', 'part'])) }}">
+                                        {{ $caption }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ol>
+                    </dd>
+                    <dt>Pasniedzējs</dt>
+                    <dd>
+                        <ol class="nav nav-pills">
+                            <li class="nav-item"><a class="nav-link{{ $filters->get('lector') == null ? ' active' : '' }}" href="{{ route('course.show', array_merge(compact(['program', 'semester', 'course']), $filters->except('lector'))) }}">Visi</a></li>
+                            @foreach($submissions->unique('lector_id') as $submission)
+                                <li class="nav-item">
+                                    <a class="nav-link{{ $submission->lector->id == $filters->get('lector') ? ' active' : '' }}"
+                                       href="{{ route('course.show', array_merge(compact('program', 'semester', 'course'), $filters->except('lector'), ['lector' => $submission->lector->id])) }}">
+                                        {{ $submission->lector->name }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ol>
+                    </dd>
+                </dl>
             </div>
         </div>
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card my-1">
                     <div class="card-body">
                         <div id="histogram-plot" style="width:100%;height:600px;"></div>
+                        <hr>
+                        <p>* 0 - Nezinu, nevaru pateikt. Pārējie vērtējumi atbilst intervālam no "Pilnīgi nepiekrītu" (1) līdz "Pilnīgi piekrītu" (7)</p>
                     </div>
                 </div>
             </div>
-            <div class="col-12">
+            <div class="col-12 my-1">
                 <div class="card">
                     <div class="card-body">
                         <div id="box-plot" style="width:100%;height:500px;"></div>
@@ -74,19 +78,15 @@
         </div>
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header">Studentu komentāri</div>
-                    <div class="card-body">
-                        <table class="table">
-                            <tbody>
-                                @foreach($submissions->pluck('comments') as $comment)
-                                    @if($comment == null) @continue @endif
-                                    <tr><td>{{ $comment }}</td></tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <h3 class="my-1">Komentāri</h3>
+                <table class="table">
+                    <tbody>
+                        @foreach($submissions->pluck('comments') as $comment)
+                            @if($comment == null) @continue @endif
+                            <tr><td>{{ $comment }}</td></tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
         <script>
@@ -142,7 +142,7 @@
             }
 
             layout = {
-                title: 'Vērtējumi par katru jautājumu',
+                title: 'Vērtējumi par katru jautājumu*',
                 showlegend: true,
                 legend: {
                     orientation: 'h',

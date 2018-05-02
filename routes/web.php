@@ -11,11 +11,11 @@
 |
 */
 
-Route::get('/', 'HomeController@index');
+Route::get('/', 'ProgramController@index');
 Route::resource('import', 'ImportController');
 
 Route::get('program', 'ProgramController@index')->name('program.index');
-Route::group(['prefix' => 'program/{program}'], function() {
+Route::group(['prefix' => 'program/{program}/{semester?}'], function() {
     Route::get('/', 'ProgramController@show')->name('program.show');
     Route::get('{course}', 'CourseController@show')->name('course.show');
 });
@@ -23,4 +23,3 @@ Route::group(['prefix' => 'program/{program}'], function() {
 Auth::routes();
 
 Route::get('/home', 'ProgramController@index')->name('home');
-//Route::get('/home', 'HomeController@index')->name('home');

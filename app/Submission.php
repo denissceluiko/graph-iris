@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Submission extends Model
@@ -138,6 +139,16 @@ class Submission extends Model
     static function getQuestionAttributes()
     {
         return array_keys(self::$questions);
+    }
+
+    public function hasComments()
+    {
+        return !empty($this->comments);
+    }
+
+    public function scopeSemester(Builder $query, Semester $semester)
+    {
+        return $query->where('semester_id', $semester->id);
     }
 
     public function course()

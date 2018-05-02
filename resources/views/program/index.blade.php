@@ -7,12 +7,14 @@
                 <h3>Studiju programmas</h3>
                 <table class="table">
                     <thead>
+                        <td>N.p.k.</td>
                         <td>Programmas kods</td>
                         <td>Programmas nosaukums</td>
                     </thead>
                     <tbody>
                     @foreach($programs as $program)
                         <tr>
+                            <td>{{ $loop->iteration }}</td>
                             <td>{{ $program->id }}</td>
                             <td>{{ $program->name }}</td>
                             <td><a class="btn btn-primary" href="{{ route('program.show', ['program' => $program]) }}" role="button">Skatīt</a></td>

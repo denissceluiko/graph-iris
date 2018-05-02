@@ -19,4 +19,9 @@ class SubmissionFilters extends QueryFilters
 
         $this->builder->whereRaw("(course_parts & $part) != 0");
     }
+
+    public function lector($lector)
+    {
+        $this->builder->where('lector_id', $lector);
+    }
 }

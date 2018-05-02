@@ -57,6 +57,11 @@ abstract class QueryFilters
         return $this->request->all();
     }
 
+    public function except($filter)
+    {
+        return $this->request->except($filter);
+    }
+
     public function has($filter)
     {
         return $this->request->has($filter);

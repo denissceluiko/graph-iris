@@ -13,7 +13,7 @@ class Program extends Model
     {
         if (!$semester)
         {
-            $semester = Semester::latest()->first();
+            return $this->belongsToMany(Course::class);
         }
 
         return $this->belongsToMany(Course::class)->wherePivot('semester_id', $semester->id);

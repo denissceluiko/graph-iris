@@ -87,6 +87,8 @@ class ImportSurveyData implements ShouldQueue
         $semester = new Semester;
         $student = new Student;
 
+        $semesterChanged = false;
+
         while ($row = fgetcsv($file))
         {
             // Get faculty
@@ -111,6 +113,7 @@ class ImportSurveyData implements ShouldQueue
                 ], [
                     'name' => str_replace('.', '. ', $row[11]),
                 ]);
+                $semesterChanged = true;
             }
 
             // Get student
@@ -129,22 +132,22 @@ class ImportSurveyData implements ShouldQueue
             }
 
             // Get course
-            if ($course->code != $row[12])
+            if ($course->code != $row[12] || $semesterChanged)
             {
-                $course = Course::where('code', $row[12])->first();
+                $course = $program->courses($semester)->code($row[12])->first();
                 if ($course == null)
                 {
-                    $course = $program->courses()->create(
+                    $course = Course::firstOrCreate(
                         [
                             'code' => $row[12],
                             'name' => $row[13],
                             'credits' => $row[14],
-                        ],
-                        [
-                            'semester_id' => $semester->id
                         ]
                     );
+
+                    $program->courses($semester)->attach($course, ['semester_id' => $semester->id]);
                 }
+                $semesterChanged = false;
             }
 
             // Get lector
@@ -192,7 +195,7 @@ class ImportSurveyData implements ShouldQueue
                     'course_results' => $row[26],
                     'lecturer_again' => $row[27],
                     'test_explanation' => $row[28],
-                    'comments' => $row[29],
+                    'comments' => $row[29] ?? null,
                     'course_time' => $row[30],
                 ]);
                 $recordsImported++;

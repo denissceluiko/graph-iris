@@ -39,10 +39,10 @@ class CourseController extends Controller
         return view('course.dashboard', compact('data', 'comments'));
     }
 
-    public function show(Request $request, SubmissionFilters $filters, Program $program, Course $course)
+    public function show(Request $request, SubmissionFilters $filters, Program $program, Semester $semester, Course $course)
     {
         $coursemeta = [
-            'semester' => Semester::latest()->first(),
+            'semester' => $semester,
             'parts' => [
                 'all' => 'Viss kurss',
                 'lectures' => 'Lekcijas',
@@ -59,7 +59,7 @@ class CourseController extends Controller
             'comments',
         ])
             ->addSelect(Submission::getQuestionAttributes())
-            ->where(['course_id' => $course->id, 'semester_id' => $coursemeta['semester']->id])
+            ->where(['course_id' => $course->id, 'semester_id' => $semester->id])
             ->filter($filters)
             ->get();
 
@@ -72,6 +72,6 @@ class CourseController extends Controller
         }
 
         $data = json_encode($data);
-        return view('course.show', compact('course', 'program', 'coursemeta', 'data', 'submissions'));
+        return view('course.show', compact('program', 'semester', 'course', 'coursemeta', 'data', 'filters', 'submissions'));
     }
 }

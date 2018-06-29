@@ -89,8 +89,10 @@ class ImportSurveyData implements ShouldQueue
 
         $semesterChanged = false;
 
-        while ($row = fgetcsv($file))
+        while ($rowstr = fgets($file))
         {
+            $row = str_getcsv(iconv('windows-1257', 'utf-8', $rowstr));
+
             // Get faculty
             if ($faculty->abbreviation != $row[2])
             {
@@ -140,6 +142,8 @@ class ImportSurveyData implements ShouldQueue
                     $course = Course::firstOrCreate(
                         [
                             'code' => $row[12],
+                        ],
+                        [
                             'name' => $row[13],
                             'credits' => $row[14],
                         ]

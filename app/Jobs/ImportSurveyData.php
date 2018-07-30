@@ -200,7 +200,7 @@ class ImportSurveyData implements ShouldQueue
                     'lecturer_again' => $row[27],
                     'test_explanation' => $row[28],
                     'comments' => $row[29] ?? null,
-                    'course_time' => $row[30],
+                    'course_time' => $row[30] ?? null,
                 ]);
                 $recordsImported++;
             }

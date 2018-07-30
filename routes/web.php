@@ -14,7 +14,7 @@
 Route::get('/', 'ProgramController@index');
 Route::resource('import', 'ImportController');
 
-Route::get('program', 'ProgramController@index')->name('program.index');
+Route::resource('program', 'ProgramController');
 Route::group(['prefix' => 'program/{program}/{semester?}'], function() {
     Route::get('/', 'ProgramController@show')->name('program.show');
     Route::get('{course}', 'CourseController@show')->name('course.show');

@@ -62,6 +62,11 @@ class ProgramController extends Controller
         return view('program.dashboard', compact('trace'));
     }
 
+    public function edit(Program $program)
+    {
+        return view('program.edit', compact('program'));
+    }
+
     public function show(Program $program, Semester $semester = null)
     {
         if (!$semester)
@@ -76,5 +81,16 @@ class ProgramController extends Controller
         }])->orderByDesc('submissions_count')->get();
 
         return view('program.show', compact('program', 'semester', 'semesters', 'courses'));
+    }
+
+    public function update(Request $request, Program $program)
+    {
+        $this->validate($request, [
+            'name' => 'required',
+        ]);
+
+        $program->update($request->only('name'));
+
+        return redirect()->route('program.show', $program);
     }
 }

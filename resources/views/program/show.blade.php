@@ -15,6 +15,7 @@
                     <dt class="col-sm-5">Programmas kods</dt>
                     <dd class="col-sm-7">{{ $program->id }}</dd>
                 </dl>
+                <a class="btn btn-primary" href="{{ route('program.edit', $program) }}">Rediģēt</a>
             </div>
             <div class="col-md-6">
                 <dl>

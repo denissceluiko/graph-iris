@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Program;
 use App\Semester;
+use App\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -76,11 +77,13 @@ class ProgramController extends Controller
 
         $semesters = Semester::orderByDesc('code')->get();
 
-        $courses = $program->courses($semester)->withCount(['submissions' => function(\Illuminate\Database\Eloquent\Builder $query) use ($semester) {
+        $courses = $program->courses($semester)->with(['submissions' => function($query) use ($semester) {
             return $query->where('semester_id', $semester->id);
-        }])->orderByDesc('submissions_count')->get();
+        }])->orderBy('name')->get();
 
-        return view('program.show', compact('program', 'semester', 'semesters', 'courses'));
+        $questions = Submission::$questions;
+
+        return view('program.show', compact('program', 'semester', 'semesters', 'courses', 'questions'));
     }
 
     public function update(Request $request, Program $program)

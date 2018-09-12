@@ -37,7 +37,7 @@ class ImportController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'survey-data' => 'required|mimes:csv,txt'
+            'survey-data' => 'required'
         ]);
 
         $path = $request->file('survey-data')->store('surveys/new');

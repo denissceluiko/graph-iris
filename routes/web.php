@@ -13,6 +13,7 @@
 
 Route::get('/', 'ProgramController@index');
 Route::resource('import', 'ImportController');
+Route::post('import/program', 'Import\ProgramController@import');
 
 Route::resource('program', 'ProgramController');
 Route::group(['prefix' => 'program/{program}/{semester?}'], function() {

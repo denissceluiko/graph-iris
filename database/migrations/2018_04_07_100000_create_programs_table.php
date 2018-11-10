@@ -14,8 +14,11 @@ class CreateProgramsTable extends Migration
     public function up()
     {
         Schema::create('programs', function (Blueprint $table) {
-            $table->integer('id')->unsigned()->primary();
+            $table->increments('id');
             $table->string('name')->nullable();
+            $table->string('lri')->nullable();
+            $table->string('luis')->unique()->nullable();
+            $table->unsignedInteger('faculty_id')->nullable();
             $table->timestamps();
         });
     }

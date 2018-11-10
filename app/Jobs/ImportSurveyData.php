@@ -100,10 +100,10 @@ class ImportSurveyData implements ShouldQueue
             }
 
             // Get program
-            if ($program->id != $row[3])
+            if ($program->luis != $row[3])
             {
                 $program = Program::firstOrCreate([
-                    'id' => $row[3],
+                    'luis' => $row[3],
                 ]);
             }
 

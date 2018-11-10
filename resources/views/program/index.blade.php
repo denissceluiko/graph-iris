@@ -15,7 +15,7 @@
                     @foreach($programs as $program)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $program->id }}</td>
+                            <td>{{ $program->luis }}</td>
                             <td>{{ $program->name }}</td>
                             <td><a class="btn btn-primary" href="{{ route('program.show', ['program' => $program]) }}" role="button">Skatīt</a></td>
                         </tr>

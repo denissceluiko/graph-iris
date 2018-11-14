@@ -15,7 +15,7 @@ class FacultiesSeeder extends Seeder
             ['BF', 'Bioloģijas fakultāte'],
             ['BVEF', 'Biznesa, vadības un ekonomikas fakultāte'],
             ['DF', 'Datorikas fakultāte'],
-            ['FMOF', 'Fizikas, matemātikas un optometrijas fakultāte'],
+            ['FMF', 'Fizikas, matemātikas un optometrijas fakultāte'],
             ['ĢZZF', 'Ģeogrāfijas un zemes zinātņu fakultāte'],
             ['HZF', 'Humanitāro zinātņu fakultāte'],
             ['JF', 'Juridiskā fakultāte'],

@@ -21,6 +21,6 @@ Route::group(['prefix' => 'program/{program}/{semester?}'], function() {
     Route::get('{course}', 'CourseController@show')->name('course.show');
 });
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 Route::get('/home', 'ProgramController@index')->name('home');

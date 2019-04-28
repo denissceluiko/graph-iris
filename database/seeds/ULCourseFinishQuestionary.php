@@ -45,7 +45,7 @@ class ULCourseFinishQuestionary extends Seeder
         ];
 
         foreach ($answers as $answer => $numerical) {
-            App\AnswerOption::create(['text' => $answer, 'numerical' => $numerical]);
+            App\AnswerOption::create(['text' => $answer, 'numeric' => $numerical]);
         }
     }
 }

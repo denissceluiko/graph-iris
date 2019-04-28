@@ -22,6 +22,7 @@ class ImportSurveyData implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $path;
+    protected $file;
 
     /**
      * Create a new job instance.
@@ -31,6 +32,70 @@ class ImportSurveyData implements ShouldQueue
     public function __construct($path)
     {
         $this->path = $path;
+    }
+
+    public function __destruct()
+    {
+        $this->closeFile();
+    }
+
+    public function newHandle()
+    {
+        // check file (exists, )
+        if (!$this->canImport()) return false;
+
+        $this->openFile();
+
+        foreach ($this->getSubmission() as $submission)
+        {
+            $this->processSubmission($submission);
+        }
+
+        $this->closeFile();
+    }
+
+    protected function processSubmission($submission)
+    {
+        $count = $this->countRecords();
+
+
+    }
+
+    protected function canImport()
+    {
+        if (!file_exists($this->path)) return false;
+        // Check if file was previously imported
+    }
+
+    protected function getSubmission()
+    {
+        $row = $this->getRow();
+        return $row === false ? false : $this->getCSV($this->toUTF8($row));
+    }
+
+    protected function getRow()
+    {
+        return fgets($this->file);
+    }
+
+    protected function getCSV($str)
+    {
+        return str_getcsv($str);
+    }
+
+    protected function toUTF8($str)
+    {
+        return iconv('windows-1257', 'utf-8', $str);
+    }
+
+    protected function openFile()
+    {
+        $this->file = fopen($this->path, 'r');
+    }
+
+    protected function closeFile()
+    {
+        fclose($this->file);
     }
 
     /**
@@ -44,14 +109,14 @@ class ImportSurveyData implements ShouldQueue
 
         if (!file_exists($this->path)) return false;
 
-        $file = fopen($this->path, 'r');
+        $this->file = fopen($this->path, 'r');
 
         $recordCount = -1; // First line is a header line.
-        while (fgets($file) !== false) $recordCount++;
+        while (fgets($this->file) !== false) $recordCount++;
 
         Log::info("File contains $recordCount records");
 
-        fseek($file, 0);
+        fseek($this->file, 0);
 
         // "Npk", "ID", "Fakultāte", "Programma", "Finans.",
         // "Statuss", "Stud.forma", "Kārto", "Datums", "Ilgums(h-min-s)",
@@ -78,7 +143,7 @@ class ImportSurveyData implements ShouldQueue
         $recordsImported = 0;
         $recordsOmited = 0;
         $recordsProcessed = 0;
-        $headers = fgetcsv($file);
+        $headers = fgetcsv($this->file);
 
         $course = new Course;
         $faculty = new Faculty;
@@ -89,7 +154,7 @@ class ImportSurveyData implements ShouldQueue
 
         $semesterChanged = false;
 
-        while ($rowstr = fgets($file))
+        while ($rowstr = fgets($this->file))
         {
             $row = str_getcsv(iconv('windows-1257', 'utf-8', $rowstr));
 
@@ -216,7 +281,7 @@ class ImportSurveyData implements ShouldQueue
             $recordsProcessed++;
         }
 
-        fclose($file);
+        fclose($this->file);
         Log::info('100% of records processed');
         Log::info("Imported records: $recordsImported/$recordCount (".round($recordsImported/$recordCount*100, 2)."%), omited: $recordsOmited(".round($recordsOmited/$recordCount*100, 2)."%)");
     }
